@@ -1,0 +1,9 @@
+## Interface: 90001
+## Title: TankAddon
+## Notes: Taunt target of high threat party/raid members.
+## Author: sbd74
+## Version: 1.4.0-sl-prepatch
+## SavedVariables: TankAddonDB
+
+embeds.xml
+TankAddon.lua
