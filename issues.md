@@ -1,0 +1,2 @@
+- enable/disable not working
+- /assist not working, selects tank instead of assisting

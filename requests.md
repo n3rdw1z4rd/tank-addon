@@ -1,0 +1,2 @@
+- 2020-02-07: Captnmoregun: addon only visible when in a tank spec
+- 2020-04-03: misakitchi: ability to only show for a 5 person party
