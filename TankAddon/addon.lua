@@ -3,22 +3,103 @@ local version = GetAddOnMetadata(title, "Version")
 
 sdb:set_debug()
 
--- local functions:
-local function GetTableCount(tbl)
-    local count = 0
-
-    for _ in pairs(tbl) do
-        count = count + 1
-    end
-
-    return count
-end
+-- local variables:
+local isEnabled = true
+local inCombat = false
+local playerRole
+local threatPercentDivisor = 100
+local classNameLocalized, class, classIndex, specIndex, spec
+local tauntSpellId, tauntSpellName
+local inParty, inRaid
+local maxWidth, maxHeight
+local maxUnitFrames = 40
+local unitFrameColumnCount = 5
+local groupGuidList = {}
+local db
 
 -- addon:
 local addon = CreateFrame("Frame", title)
 
+-- slash commands:
+SLASH_TANKADDON1, SLASH_TANKADDON2 = "/tankaddon", "/ta"
+
+function addon:HandleSlashCommand(msg)
+    local _, _, cmd, argStr = string.find(msg, "%s?(%w+)%s?(.*)")
+    local slashCmd = "HandleSlashCommand_" .. cmd
+    local args = { strsplit(" ", argStr) }
+
+    sdb:log_debug("HandleSlashCommand: ", cmd, argStr)
+    
+    if cmd == "help" then
+        sdb:log_info("TankAddon v" .. version .. " slash command help")
+        sdb:log_info("syntax: /tankaddon (or /ta) command arg1 arg2")
+        sdb:log_info("command: 'help': this message")
+        sdb:log_info("command: 'get', arg1: OPTION_NAME or 'all': show the value of the OPTION_NAME or values of all options")
+        sdb:log_info("command: 'set', arg1: OPTION_NAME, arg2: VALUE: set the OPTION_NAME to the VALUE")
+        sdb:log_info("command: 'reset': sets all options to the default values")
+    elseif cmd == "get" then
+        if sdb:contains(db, args[1]) then
+            sdb:log_info(args[1] .. " = ", db[args[1]])
+        elseif args[1] == "all" then
+            table.foreach(db, function(k, v)
+                sdb:log_info(k .. " = ", v)
+            end)
+        else
+            sdb:log_error("unknown property: ", args[1])
+        end
+    elseif cmd == "set" then
+        if sdb:contains(data.Options, args[1]) then
+            local val
+
+            if data.Options[args[1]].type == "boolean" then
+                val = args[2] == "true" or false
+            elseif data.Options[args[1]].type == "number" then
+                val = tonumber(args[2])
+
+                if sdb:contains(data.Options[args[1]], "step") then
+                    val = val - (val % data.Options[args[1]].step)
+                end
+
+                if sdb:contains(data.Options[args[1]], "min") then
+                    if val < data.Options[args[1]].min then
+                        val = data.Options[args[1]].min
+                    end
+                end
+
+                if sdb:contains(data.Options[args[1]], "max") then
+                    if val > data.Options[args[1]].max then
+                        val = data.Options[args[1]].max
+                    end
+                end
+            else
+                val = args[2]
+            end
+
+            db[args[1]] = val
+            
+            sdb:log_info(args[1] .. " = ", db[args[1]])
+        else
+            sdb:log_error("unknown setting: " .. args[1])
+        end
+    elseif cmd == "reset" then
+        db = sdb:GetOptionDefaults(data.Options)
+
+        table.foreach(db, function(k, v)
+            sdb:log_info(k .. " = ", v)
+        end)
+    else
+        sdb:log_error("command does not exist:", cmd)
+        sdb:log_info("try '/tankaddon help' for help with slash commands")
+    end
+end
+
+SlashCmdList["TANKADDON"] = function(msg)
+    addon:HandleSlashCommand(msg)
+end
+
 -- registered events:
 addon:RegisterEvent("ADDON_LOADED")
+addon:RegisterEvent("PLAYER_LOGOUT")
 -- addon:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 -- addon:RegisterEvent("GROUP_ROSTER_UPDATE")
