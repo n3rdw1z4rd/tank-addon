@@ -117,9 +117,6 @@ addon:SetScript("OnEvent", function(self, event, ...)
 end)
 
 -- addon functions:
--- function self:SetupDB()
--- end
-
 -- function self:SetupOptions()
 -- end
 
@@ -300,6 +297,3 @@ end
 
 --     -- sdb:log_debug("spec: " .. spec)
 -- end
-
-    sdb:log_debug("spec: " .. spec)
-end
