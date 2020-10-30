@@ -1,5 +1,7 @@
 data = {}
 
+data.Font = "Fonts/FRIZQT__.TTF"
+
 data.ClassData = {
     DEATHKNIGHT = {
         spec = "Blood",
