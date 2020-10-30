@@ -180,35 +180,24 @@ function addon:ADDON_LOADED(addOnName)
     if addOnName == title then
         sdb:log_debug("ADDON_LOADED")
         sdb:log_info(title .. " v" .. version .. " loaded.")
-        
-        self.enabled = true
-        self.inCombat = false
-        self.playerRole
-        self.threatPercentDivisor = 100
-        self.classNameLocalized
-        self.class
-        self.classIndex
-        self.specIndex
-        self.spec
-        self.tauntSpellId
-        self.tauntSpellName
-        self.inParty
-        self.inRaid
-        self.maxWidth
-        self.maxHeight
-        self.maxUnitFrames = 40
-        self.unitFrameColumnCount = 5
-        self.groupGuidList = {}
-        self.db
 
-        -- self:SetupDB()
+        db = sdb:GetOptionDefaults(data.Options)
+
+        if TankAddonVars then
+            db = TankAddonVars
+        end
+
+        sdb:log_debug("saved variables:")
+        sdb:log_debug_table(db)
+
         -- self:SetupOptions()
         -- self:CreateFrames()
     end
 end
 
-function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
-    sdb:log_debug("PLAYER_ENTERING_WORLD")
+function addon:PLAYER_LOGOUT()
+    TankAddonVars = db
+end
 
     local classNameLocalized, class, classIndex = UnitClass("player")
     self.player_class = class
