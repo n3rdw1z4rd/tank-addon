@@ -2,8 +2,12 @@
 ## Title: TankAddon
 ## Notes: Taunt target of high threat party/raid members.
 ## Author: sbd74
-## Version: 1.4.1-sl-prepatch
+## Version: 2.0
 ## SavedVariables: TankAddonDB
 
-embeds.xml
-TankAddon.lua
+## embeds.xml
+## TankAddon.lua
+
+data.lua
+sdb.lua
+addon.lua
