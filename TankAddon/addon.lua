@@ -19,15 +19,15 @@ local addon = CreateFrame("Frame", title)
 
 -- registered events:
 addon:RegisterEvent("ADDON_LOADED")
-addon:RegisterEvent("PLAYER_ENTERING_WORLD")
-addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-addon:RegisterEvent("GROUP_ROSTER_UPDATE")
-addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
-addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
-addon:RegisterEvent("PLAYER_REGEN_ENABLED")
-addon:RegisterEvent("PLAYER_REGEN_DISABLED")
+-- addon:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+-- addon:RegisterEvent("GROUP_ROSTER_UPDATE")
+-- addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+-- addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+-- addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+-- addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
+-- addon:RegisterEvent("PLAYER_REGEN_ENABLED")
+-- addon:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 addon:SetScript("OnEvent", function(self, event, ...)
     if self[event] then
@@ -199,20 +199,26 @@ function addon:PLAYER_LOGOUT()
     TankAddonVars = db
 end
 
-    local classNameLocalized, class, classIndex = UnitClass("player")
-    self.player_class = class
+-- function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
+--     sdb:log_debug("PLAYER_ENTERING_WORLD")
 
-    self:UpdatePlayerInfo()
+--     local classNameLocalized, class, classIndex = UnitClass("player")
+--     self.player_class = class
 
-    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
+--     self:UpdatePlayerInfo()
 
-function addon:UpdatePlayerInfo()
-    sdb:log_debug("UpdatePlayerInfo")
+--     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+-- end
 
-    local specIndex = GetSpecialization()
-    local spec = specIndex and select(2, GetSpecializationInfo(specIndex)) or "None"
-    self.player_spec = spec
+-- function addon:UpdatePlayerInfo()
+--     sdb:log_debug("UpdatePlayerInfo")
+
+--     local specIndex = GetSpecialization()
+--     local spec = specIndex and select(2, GetSpecializationInfo(specIndex)) or "None"
+--     self.player_spec = spec
+
+--     -- sdb:log_debug("spec: " .. spec)
+-- end
 
     sdb:log_debug("spec: " .. spec)
 end
