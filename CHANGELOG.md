@@ -1,3 +1,10 @@
+v1.6.0-sl-prepatch:
+- Added options to the Interface Options Menu
+
+v1.5.0-sl-prepatch:
+- Removed Ace3 dependency
+- Fixed the taunts not working
+
 v1.4.1-sl-prepatch:
 - Update wowace
 
