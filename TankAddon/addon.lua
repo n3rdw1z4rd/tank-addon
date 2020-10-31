@@ -135,15 +135,15 @@ end
 -- registered events:
 addon:RegisterEvent("ADDON_LOADED")
 addon:RegisterEvent("PLAYER_LOGOUT")
--- addon:RegisterEvent("PLAYER_ENTERING_WORLD")
--- addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
--- addon:RegisterEvent("GROUP_ROSTER_UPDATE")
--- addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
--- addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
--- addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
--- addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
--- addon:RegisterEvent("PLAYER_REGEN_ENABLED")
--- addon:RegisterEvent("PLAYER_REGEN_DISABLED")
+addon:RegisterEvent("PLAYER_ENTERING_WORLD")
+addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+addon:RegisterEvent("GROUP_ROSTER_UPDATE")
+addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
+addon:RegisterEvent("PLAYER_REGEN_ENABLED")
+addon:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 addon:SetScript("OnEvent", function(self, event, ...)
     if self[event] then
@@ -303,8 +303,8 @@ function addon:ADDON_LOADED(addOnName)
         sdb:log_debug("saved variables:")
         sdb:log_debug_table(db)
 
-        -- self:SetupOptions()
-        -- self:CreateFrames()
+        self:SetupOptions()
+        self:CreateFrames()
     end
 end
 
@@ -312,23 +312,80 @@ function addon:PLAYER_LOGOUT()
     TankAddonVars = db
 end
 
--- function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
---     sdb:log_debug("PLAYER_ENTERING_WORLD")
+function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
+    sdb:log_debug("PLAYER_ENTERING_WORLD")
 
---     local classNameLocalized, class, classIndex = UnitClass("player")
---     self.player_class = class
+    classNameLocalized, class, classIndex = UnitClass("player")
 
---     self:UpdatePlayerInfo()
+    self:UpdatePlayerSpec()
+    self:UpdatePlayerGroupState()
+    self:UpdateGroupGuidList()
+    self:UpdateGroupFrameUnits()
 
---     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
--- end
+    -- self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
 
--- function addon:UpdatePlayerInfo()
---     sdb:log_debug("UpdatePlayerInfo")
+function addon:ACTIVE_TALENT_GROUP_CHANGED()
+    sdb:log_debug("ACTIVE_TALENT_GROUP_CHANGED")
+    self:UpdatePlayerSpec()
+end
 
---     local specIndex = GetSpecialization()
---     local spec = specIndex and select(2, GetSpecializationInfo(specIndex)) or "None"
---     self.player_spec = spec
+function addon:GROUP_ROSTER_UPDATE()
+    sdb:log_debug("GROUP_ROSTER_UPDATE")
+    self:UpdatePlayerSpec()
+    self:UpdatePlayerGroupState()
+    self:UpdateGroupGuidList()
+    self:UpdateGroupFrameUnits()
+end
 
---     -- sdb:log_debug("spec: " .. spec)
--- end
+function addon:COMBAT_LOG_EVENT_UNFILTERED(...)
+    -- sdb:log_debug("COMBAT_LOG_EVENT_UNFILTERED")
+    -- local timestamp,
+    --     subevent,
+    --     _,
+    --     sourceGUID,
+    --     sourceName,
+    --     sourceFlags,
+    --     sourceRaidFlags,
+    --     destGUID,
+    --     destName,
+    --     destFlags,
+    --     destRaidFlags = CombatLogGetCurrentEventInfo()
+    -- if self:InGroup(destGUID) then
+    --     sdb:log_debug("CLEU:", subevent, sourceName, destName)
+    -- end
+    -- self:UpdateUnitFramesThreat()
+end
+
+function addon:UNIT_THREAT_LIST_UPDATE(_, target)
+    sdb:log_debug("UNIT_THREAT_LIST_UPDATE")
+    self:UpdateUnitFramesThreat()
+end
+
+function addon:UNIT_THREAT_SITUATION_UPDATE(_, target)
+    sdb:log_debug("UNIT_THREAT_SITUATION_UPDATE")
+    self:UpdateUnitFramesThreat()
+end
+
+function addon:PLAYER_LEAVE_COMBAT()
+    sdb:log_debug("PLAYER_LEAVE_COMBAT")
+    self.GroupFrame:ResetUnitFramesThreat()
+end
+
+function addon:PLAYER_REGEN_ENABLED()
+    sdb:log_debug("PLAYER_REGEN_ENABLED")
+    self.GroupFrame:ResetUnitFramesThreat()
+
+    if not db.always_show or not db.enabled then
+        self.GroupFrame:Hide()
+    end
+end
+
+function addon:PLAYER_REGEN_DISABLED()
+    sdb:log_debug("PLAYER_REGEN_DISABLED")
+    self.GroupFrame:ResetUnitFramesThreat()
+
+    if db.enabled and not self.GroupFrame:IsVisible() then
+        self.GroupFrame:Show()
+    end
+end
