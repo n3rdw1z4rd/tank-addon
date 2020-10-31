@@ -1,7 +1,7 @@
 local title = ...
 local version = GetAddOnMetadata(title, "Version")
 
-sdb:set_debug()
+-- sdb:set_debug()
 
 -- local variables:
 local isEnabled = true
