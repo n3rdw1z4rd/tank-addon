@@ -38,22 +38,26 @@ data.ClassData = {
 data.Options = {
     enabled = {
         type = "boolean",
-        default = true
+        default = true,
+        label = "Enabled"
     },
     locked = {
         type = "boolean",
-        default = false
+        default = false,
+        label = "Position Locked"
     },
     always_show = {
         type = "boolean",
-        default = true
+        default = true,
+        label = "Always Show"
     },
     frame_padding = {
         type = "number",
         min = 5,
         max = 15,
         step = 1,
-        default = 5
+        default = 5,
+        label = "Group Frame Padding"
     },
     -- include_player = true,
     -- includePets = false,
@@ -62,21 +66,24 @@ data.Options = {
         min = 50,
         max = 120,
         step = 1,
-        default = 80
+        default = 80,
+        label = "Unit Frame Width"
     },
     height = {
         type = "number",
         min = 15,
         max = 50,
         step = 1,
-        default = 30
+        default = 30,
+        label = "Unit Frame Height"
     },
     unit_padding = {
         type = "number",
         min = 0,
         max = 10,
         step = 1,
-        default = 5
+        default = 5,
+        label = "Unit Frame Padding"
     },
     -- font = "Fonts/FRIZQT__.TTF",
     font_size = {
@@ -84,6 +91,7 @@ data.Options = {
         min = 8,
         max = 18,
         step = 2,
-        default = 12
+        default = 12,
+        label = "Font Size"
     }
 }

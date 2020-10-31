@@ -56,3 +56,99 @@ function sdb:GetOptionDefaults(options)
 
     return defaults
 end
+
+function sdb:GenerateOptionsInterface(addon, options, db, onUpdated)
+    local addonTitle = addon:GetName()
+    local optionsPanelTitle = addonTitle .. "Options"
+
+    self:log_debug("GenerateOptionsInterface: ", optionsPanelTitle)
+
+    local optionsPanel = CreateFrame("Frame", optionsPanelTitle)
+    optionsPanel.name = addonTitle
+
+    local title = optionsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	title:SetPoint("TOPLEFT", 10, -10)
+	title:SetText(addonTitle .. " v" .. addon.version)
+
+    InterfaceOptions_AddCategory(optionsPanel)
+
+    function NewCheckbox(name, label, hpos, vpos, value)
+        local checkbox = CreateFrame("CheckButton", name, optionsPanel, "ChatConfigCheckButtonTemplate");
+        checkbox:SetPoint("TOPLEFT", hpos, vpos)
+        checkbox:SetChecked(value)
+        checkbox.tooltip = label;
+        getglobal(checkbox:GetName().."Text"):SetText(label);
+        return checkbox
+    end
+
+    function NewSlider(name, label, hpos, vpos, value, min, max, step)
+        local slider = CreateFrame("Slider", name, optionsPanel, "OptionsSliderTemplate");
+        slider:SetPoint("TOPLEFT", hpos, vpos);
+        slider.tooltip = label;
+        getglobal(slider:GetName().."Text"):SetText(label);
+        getglobal(slider:GetName().."Low"):SetText(tostring(min));
+        getglobal(slider:GetName().."High"):SetText(tostring(max));
+        slider:SetMinMaxValues(min, max);
+        slider:SetValueStep(step);
+        slider:SetValue(value);
+        return slider
+    end
+
+    local controls = {}
+    local lvpos, rvpos = -35, -35
+
+    for k, v in pairs(options) do
+        self:log_debug(v.label, ": ", v.default)
+
+        if v.type == "boolean" then
+            local checkbox = NewCheckbox(k.."_checkbox", v.label, 10, lvpos, db[k])
+            
+            checkbox:SetScript("OnClick", function(self, button, down)
+                local state = self:GetChecked()
+                db[k] = state
+                onUpdated()
+            end)
+
+            function checkbox:UpdateValue(value)
+                self:SetChecked(value)
+            end
+            
+            controls[k] = checkbox
+
+            lvpos = lvpos - 30
+        elseif v.type == "number" then
+            local slider = NewSlider(k.."_slider", v.label, 200, rvpos, db[k], v.min, v.max, v.step)
+
+            slider:SetScript("OnValueChanged", function(self, value, userInput)
+                local val = math.floor(value)
+                db[k] = val - (val % v.step)
+                onUpdated()
+            end);
+
+            function slider:UpdateValue(value)
+                self:SetValue(value)
+            end
+
+            controls[k] = slider
+
+            rvpos = rvpos - 45
+        end
+    end
+
+    optionsPanel.okay = function()
+        onUpdated()
+    end
+    
+    optionsPanel.default = function()
+        addon:ResetToDefaults()
+        onUpdated()
+    end
+    
+    optionsPanel.refresh = function()
+        for k, v in pairs(controls) do
+            v:UpdateValue(db[k])
+        end
+    end
+
+    return optionsPanel
+end

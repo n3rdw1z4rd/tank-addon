@@ -21,6 +21,7 @@ local db
 
 -- addon:
 local addon = CreateFrame("Frame", title)
+addon.version = version
 
 -- slash commands:
 SLASH_TANKADDON1, SLASH_TANKADDON2 = "/tankaddon", "/ta"
@@ -91,7 +92,7 @@ function addon:HandleSlashCommand(msg)
             sdb:log_error("unknown setting: " .. args[1])
         end
     elseif cmd == "reset" then
-        db = sdb:GetOptionDefaults(data.Options)
+        self:ResetToDefaults()
 
         table.foreach(db, function(k, v)
             sdb:log_info(k .. " = ", v)
@@ -128,6 +129,12 @@ function addon:HandleSlashCommand(msg)
     end
 end
 
+function addon:ResetToDefaults()
+    for k, v in pairs(sdb:GetOptionDefaults(data.Options)) do
+        db[k] = v
+    end
+end
+
 SlashCmdList["TANKADDON"] = function(msg)
     addon:HandleSlashCommand(msg)
 end
@@ -155,7 +162,9 @@ end)
 function addon:SetupOptions()
     sdb:log_debug("SetupOptions")
 
-    -- TODO: setup InterfaceOptionsPanel by parsing data.Options
+    sdb:GenerateOptionsInterface(self, data.Options, db, function()
+        self:OnOptionsUpdated()
+    end)
 end
 
 function addon:CreateFrames()
