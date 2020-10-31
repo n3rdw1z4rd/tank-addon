@@ -8,13 +8,15 @@ local isEnabled = true
 local inCombat = false
 local playerRole
 local threatPercentDivisor = 100
-local classNameLocalized, class, classIndex, specIndex, spec
+local classNameLocalized, class, classIndex
+local specIndex, spec
 local tauntSpellId, tauntSpellName
 local inParty, inRaid
 local maxWidth, maxHeight
 local maxUnitFrames = 40
 local unitFrameColumnCount = 5
 local groupGuidList = {}
+local include_player = true
 local db
 
 -- addon:
@@ -24,17 +26,22 @@ local addon = CreateFrame("Frame", title)
 SLASH_TANKADDON1, SLASH_TANKADDON2 = "/tankaddon", "/ta"
 
 function addon:HandleSlashCommand(msg)
-    local _, _, cmd, argStr = string.find(msg, "%s?(%w+)%s?(.*)")
-    local slashCmd = "HandleSlashCommand_" .. cmd
-    local args = { strsplit(" ", argStr) }
-
-    sdb:log_debug("HandleSlashCommand: ", cmd, argStr)
+    local _, _, cmd, argsString = string.find(msg, "%s?(%w+)%s?(.*)")
     
+    cmd = cmd or "help"
+    argsString = argsString or ""
+
+    local slashCmd = "HandleSlashCommand_" .. cmd
+    local args = {strsplit(" ", argsString)}
+
+    sdb:log_debug("HandleSlashCommand: ", cmd, argsString)
+
     if cmd == "help" then
         sdb:log_info("TankAddon v" .. version .. " slash command help")
         sdb:log_info("syntax: /tankaddon (or /ta) command arg1 arg2")
         sdb:log_info("command: 'help': this message")
-        sdb:log_info("command: 'get', arg1: OPTION_NAME or 'all': show the value of the OPTION_NAME or values of all options")
+        sdb:log_info(
+            "command: 'get', arg1: OPTION_NAME or 'all': show the value of the OPTION_NAME or values of all options")
         sdb:log_info("command: 'set', arg1: OPTION_NAME, arg2: VALUE: set the OPTION_NAME to the VALUE")
         sdb:log_info("command: 'reset': sets all options to the default values")
     elseif cmd == "get" then
@@ -76,8 +83,10 @@ function addon:HandleSlashCommand(msg)
             end
 
             db[args[1]] = val
-            
+
             sdb:log_info(args[1] .. " = ", db[args[1]])
+
+            self:OnOptionsUpdated()
         else
             sdb:log_error("unknown setting: " .. args[1])
         end
@@ -87,6 +96,32 @@ function addon:HandleSlashCommand(msg)
         table.foreach(db, function(k, v)
             sdb:log_info(k .. " = ", v)
         end)
+
+        self:OnOptionsUpdated()
+    elseif cmd == "locals" then
+        sdb:log_debug("isEnabled = ", isEnabled)
+        sdb:log_debug("inCombat = ", inCombat)
+        sdb:log_debug("playerRole = ", playerRole)
+        sdb:log_debug("threatPercentDivisor = ", threatPercentDivisor)
+        sdb:log_debug("classNameLocalized = ", classNameLocalized)
+        sdb:log_debug("class = ", class)
+        sdb:log_debug("classIndex = ", classIndex)
+        sdb:log_debug("specIndex = ", specIndex)
+        sdb:log_debug("spec = ", spec)
+        sdb:log_debug("tauntSpellId = ", tauntSpellId)
+        sdb:log_debug("tauntSpellName = ", tauntSpellName)
+        sdb:log_debug("inParty = ", inParty)
+        sdb:log_debug("inRaid = ", inRaid)
+        sdb:log_debug("maxWidth = ", maxWidth)
+        sdb:log_debug("maxHeight = ", maxHeight)
+        sdb:log_debug("maxUnitFrames = ", maxUnitFrames)
+        sdb:log_debug("unitFrameColumnCount = ", unitFrameColumnCount)
+
+        sdb:log_debug("groupGuidList:")
+        sdb:log_debug_table(groupGuidList)
+
+        sdb:log_debug("db:")
+        sdb:log_debug_table(db)
     else
         sdb:log_error("command does not exist:", cmd)
         sdb:log_info("try '/tankaddon help' for help with slash commands")
