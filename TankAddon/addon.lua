@@ -16,8 +16,6 @@ local maxWidth, maxHeight
 local maxUnitFrames = 40
 local unitFrameColumnCount = 5
 local groupGuidList = {}
-local include_player = true
-local db
 
 -- addon:
 local addon = CreateFrame("Frame", title)
@@ -100,22 +98,22 @@ function addon:HandleSlashCommand(msg)
 
         self:OnOptionsUpdated()
     elseif cmd == "locals" then
-        sdb:log_debug("isEnabled = ", isEnabled)
-        sdb:log_debug("inCombat = ", inCombat)
-        sdb:log_debug("playerRole = ", playerRole)
-        sdb:log_debug("threatPercentDivisor = ", threatPercentDivisor)
-        sdb:log_debug("classNameLocalized = ", classNameLocalized)
         sdb:log_debug("class = ", class)
         sdb:log_debug("classIndex = ", classIndex)
-        sdb:log_debug("specIndex = ", specIndex)
-        sdb:log_debug("spec = ", spec)
-        sdb:log_debug("tauntSpellId = ", tauntSpellId)
-        sdb:log_debug("tauntSpellName = ", tauntSpellName)
+        sdb:log_debug("classNameLocalized = ", classNameLocalized)
+        sdb:log_debug("inCombat = ", inCombat)
         sdb:log_debug("inParty = ", inParty)
         sdb:log_debug("inRaid = ", inRaid)
-        sdb:log_debug("maxWidth = ", maxWidth)
+        sdb:log_debug("isEnabled = ", isEnabled)
         sdb:log_debug("maxHeight = ", maxHeight)
         sdb:log_debug("maxUnitFrames = ", maxUnitFrames)
+        sdb:log_debug("maxWidth = ", maxWidth)
+        sdb:log_debug("playerRole = ", playerRole)
+        sdb:log_debug("spec = ", spec)
+        sdb:log_debug("specIndex = ", specIndex)
+        sdb:log_debug("tauntSpellId = ", tauntSpellId)
+        sdb:log_debug("tauntSpellName = ", tauntSpellName)
+        sdb:log_debug("threatPercentDivisor = ", threatPercentDivisor)
         sdb:log_debug("unitFrameColumnCount = ", unitFrameColumnCount)
 
         sdb:log_debug("groupGuidList:")
@@ -345,7 +343,6 @@ function addon:OnOptionsUpdated()
 
         local unitName = child:GetName()
 
-        if (unitName == "player" and db.include_player) or unitName ~= "player" then
             child.text:SetFont(data.Font, db.font_size)
             child:SetPoint("BOTTOMLEFT", self.GroupFrame, offsetX, offsetY)
 
@@ -357,7 +354,6 @@ function addon:OnOptionsUpdated()
             end
         end
     end
-end
 
 function addon:UpdatePlayerSpec()
     sdb:log_debug("UpdatePlayerSpec")
@@ -383,7 +379,7 @@ function addon:UpdateGroupGuidList()
 
     wipe(groupGuidList)
 
-    if not inRaid and include_player then
+    if not inRaid then
         groupGuidList["player"] = {
             guid = UnitGUID("player"),
             name = UnitName("player"),
@@ -523,7 +519,7 @@ end
 function addon:UpdateUnitFramesThreat()
     sdb:log_debug("UpdateUnitFramesThreat")
 
-    if not inRaid and db.include_player then
+    if not inRaid then
         local playerIsTanking, playerThreatStatus, playerThreatPct, playerRawThreatPct, playerThreatValue =
             UnitDetailedThreatSituation("player", "target")
 
@@ -542,35 +538,6 @@ function addon:UpdateUnitFramesThreat()
             if threatPct then
                 self.GroupFrame:UpdateThreatForUnit(unit, (threatPct / threatPercentDivisor))
             end
-
-            -- local threatSituation = UnitThreatSituation(unit) or 0
-
-            -- if threatSituation > 0 then
-            --     if not self:InGroup(data["target"]) then
-            --         -- target is not in group, check threat
-            --         local isTanking, threatStatus, threatPct, rawThreatPct, threatValue =
-            --             UnitDetailedThreatSituation(unit, data["target"])
-
-            --         if threatPct then
-            --             self.GroupFrame:UpdateThreatForUnit(unit, (threatPct / threatPercentDivisor))
-            --         end
-            --     else
-            --         local unitTargetTarget = data["target"] .. "target"
-
-            --         if not self:InGroup(unitTargetTarget) then
-            --             local isTanking, threatStatus, threatPct, rawThreatPct, threatValue =
-            --                 UnitDetailedThreatSituation(unit, unitTargetTarget)
-
-            --             if threatPct then
-            --                 self.GroupFrame:UpdateThreatForUnit(unit, (threatPct / threatPercentDivisor))
-            --             end
-            --         else
-            --             self.GroupFrame:UpdateThreatForUnit(unit, (1 / threatSituation))
-            --         end
-            --     end
-            -- else
-            --     self.GroupFrame:UpdateThreatForUnit(unit, 0)
-            -- end
         end
     end
 end

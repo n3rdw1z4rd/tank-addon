@@ -1,6 +1,7 @@
 local debug = false
 
 sdb = {}
+db = {}
 
 function sdb:set_debug(v)
     v = v or true

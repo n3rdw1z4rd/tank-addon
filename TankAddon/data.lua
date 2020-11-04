@@ -59,8 +59,6 @@ data.Options = {
         default = 5,
         label = "Group Frame Padding"
     },
-    -- include_player = true,
-    -- includePets = false,
     width = {
         type = "number",
         min = 50,
@@ -85,7 +83,6 @@ data.Options = {
         default = 5,
         label = "Unit Frame Padding"
     },
-    -- font = "Fonts/FRIZQT__.TTF",
     font_size = {
         type = "number",
         min = 8,
