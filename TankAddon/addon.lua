@@ -1,11 +1,12 @@
 local title = ...
 local version = GetAddOnMetadata(title, "Version")
 
--- sdb:set_debug()
+-- local debug variable:
+local debugUnitCount = 5
 
 -- local variables:
-local isEnabled = true
-local inCombat = false
+local DEBUG = sdb:get_debug()
+local screenWidth, screenHeight
 local playerRole
 local threatPercentDivisor = 100
 local classNameLocalized, class, classIndex
@@ -101,10 +102,8 @@ function addon:HandleSlashCommand(msg)
         sdb:log_debug("class = ", class)
         sdb:log_debug("classIndex = ", classIndex)
         sdb:log_debug("classNameLocalized = ", classNameLocalized)
-        sdb:log_debug("inCombat = ", inCombat)
         sdb:log_debug("inParty = ", inParty)
         sdb:log_debug("inRaid = ", inRaid)
-        sdb:log_debug("isEnabled = ", isEnabled)
         sdb:log_debug("maxHeight = ", maxHeight)
         sdb:log_debug("maxUnitFrames = ", maxUnitFrames)
         sdb:log_debug("maxWidth = ", maxWidth)
@@ -183,7 +182,7 @@ function addon:CreateFrames()
     })
     self.GroupFrame:SetBackdropColor(0, 0, 0, 0.8)
     self.GroupFrame:ClearAllPoints()
-    self.GroupFrame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", 1920 / 2, 1080 / 2)
+    self.GroupFrame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", screenWidth / 2, screenHeight / 2)
 
     if not db.always_show then
         self.GroupFrame:Hide()
@@ -250,7 +249,6 @@ function addon:CreateFrames()
     local currentUnitOffsetY = db.frame_padding
 
     for i = 1, maxUnitFrames do
-        -- local button = CreateFrame("Button", format("UnitFrame%d", i), self.GroupFrame, "SecureActionButtonTemplate")
         local button = CreateFrame("Button", format("UnitFrame%d", i), self.GroupFrame, BackdropTemplateMixin and "BackdropTemplate, SecureActionButtonTemplate")
 
         button:SetWidth(db.width)
@@ -327,7 +325,7 @@ function addon:OnOptionsUpdated()
     self.GroupFrame:SetWidth(groupFrameWidth)
     self.GroupFrame:SetHeight(groupFrameHeight)
 
-    if (not db.always_show and not inCombat) or not db.enabled then
+    if not db.always_show or not db.enabled then
         self.GroupFrame:Hide()
     elseif db.always_show and db.enabled then
         self.GroupFrame:Show()
@@ -413,8 +411,10 @@ function addon:UpdateGroupGuidList()
                 }
             end
         end
-    elseif isTesting then
-        for i = 1, maxUnitFrames - 1 do -- minus one here to account for added player unit frame
+    elseif DEBUG then
+        local count = debugUnitCount > 0 and debugUnitCount or maxUnitFrames
+
+        for i = 1, count - 1 do -- minus one here to account for added player unit frame
             local unit = "player"
             local target = "target"
 
@@ -532,6 +532,7 @@ function addon:UpdateUnitFramesThreat()
 
     if groupGuidList then
         for unit, data in pairs(groupGuidList) do
+            if UnitExists(unit) then
             local isTanking, threatStatus, threatPct, rawThreatPct, threatValue =
                 UnitDetailedThreatSituation(unit, data["target"])
 
@@ -540,6 +541,7 @@ function addon:UpdateUnitFramesThreat()
             end
         end
     end
+end
 end
 
 -- event functions:
@@ -556,6 +558,12 @@ function addon:ADDON_LOADED(addOnName)
 
         sdb:log_debug("saved variables:")
         sdb:log_debug_table(db)
+
+        screenWidth = GetScreenWidth() * UIParent:GetEffectiveScale()
+        sdb:log_debug("screenWidth: ", screenWidth)
+
+        screenHeight = GetScreenHeight() * UIParent:GetEffectiveScale()
+        sdb:log_debug("screenHeight: ", screenHeight)
 
         self:SetupOptions()
         self:CreateFrames()

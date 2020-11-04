@@ -3,6 +3,10 @@ local debug = false
 sdb = {}
 db = {}
 
+function sdb:get_debug()
+    return (debug)
+end
+
 function sdb:set_debug(v)
     v = v or true
     debug = v

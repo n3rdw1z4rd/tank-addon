@@ -91,4 +91,16 @@ data.Options = {
         default = 12,
         label = "Font Size"
     }
+    -- ,
+    -- vertical_layout = {
+    --     type = "boolean",
+    --     default = false,
+    --     label = "Vertical Layout"
+    -- },
+    -- grow_direction = {
+    --     type = "select",
+    --     values = { "Up", "Down", "Left", "Right" },
+    --     default = "Up",
+    --     label = "Grow Direction"
+    -- }
 }
