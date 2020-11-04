@@ -94,8 +94,38 @@ function sdb:GenerateOptionsInterface(addon, options, db, onUpdated)
         return slider
     end
 
+    function NewSelect(name, label, hpos, vpos, value, values, on_clicked)
+        local select = CreateFrame("Frame", name, optionsPanel, "UIDropDownMenuTemplate")
+        select:SetPoint("TOPLEFT", hpos - 15, vpos)
+        UIDropDownMenu_SetWidth(select, 140)
+        select.list = values
+        select.tooltip = label;
+
+        function initialize(self)
+            local info = UIDropDownMenu_CreateInfo()
+
+            for i, item in pairs(values) do
+                info.text = item
+                info.arg1 = item
+                info.func = function(self, arg1, arg2, checked)
+                    value = arg1
+                    on_clicked(arg1)
+                    UIDropDownMenu_SetSelectedValue(select, self.value, true)
+                    UIDropDownMenu_SetText(select, label..": "..value)
+                end
+
+                UIDropDownMenu_AddButton(info)
+            end
+
+            UIDropDownMenu_SetSelectedValue(select, value)
+            UIDropDownMenu_SetText(select, label..": "..value)
+        end
+
+        UIDropDownMenu_Initialize(select, initialize)
+    end
+
     local controls = {}
-    local lvpos, rvpos = -35, -35
+    local lvpos, rvpos = -35, -50
 
     for k, v in pairs(options) do
         self:log_debug(v.label, ": ", v.default)
@@ -132,6 +162,13 @@ function sdb:GenerateOptionsInterface(addon, options, db, onUpdated)
             controls[k] = slider
 
             rvpos = rvpos - 45
+        elseif v.type == "select" then
+            NewSelect(k.."_select", v.label, 10, lvpos, db[k], v.values, function(value)
+                db[k] = value
+                onUpdated()
+            end)
+
+            lvpos = lvpos - 30
         end
     end
 
