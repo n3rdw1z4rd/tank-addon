@@ -7,7 +7,7 @@ local version = GetAddOnMetadata(title, "Version")
 local debugUnitCount = 5
 
 -- local variables:
-local DEBUG = sdb:get_debug()
+local DEBUG = sbd:get_debug()
 local screenWidth, screenHeight
 local playerRole
 local threatPercentDivisor = 100
@@ -36,28 +36,28 @@ function addon:HandleSlashCommand(msg)
     local slashCmd = "HandleSlashCommand_" .. cmd
     local args = {strsplit(" ", argsString)}
 
-    sdb:log_debug("HandleSlashCommand: ", cmd, argsString)
+    sbd:log_debug("HandleSlashCommand: ", cmd, argsString)
 
     if cmd == "help" then
-        sdb:log_info("TankAddon v" .. version .. " slash command help")
-        sdb:log_info("syntax: /tankaddon (or /ta) command arg1 arg2")
-        sdb:log_info("command: 'help': this message")
-        sdb:log_info(
+        sbd:log_info("TankAddon v" .. version .. " slash command help")
+        sbd:log_info("syntax: /tankaddon (or /ta) command arg1 arg2")
+        sbd:log_info("command: 'help': this message")
+        sbd:log_info(
             "command: 'get', arg1: OPTION_NAME or 'all': show the value of the OPTION_NAME or values of all options")
-        sdb:log_info("command: 'set', arg1: OPTION_NAME, arg2: VALUE: set the OPTION_NAME to the VALUE")
-        sdb:log_info("command: 'reset': sets all options to the default values")
+        sbd:log_info("command: 'set', arg1: OPTION_NAME, arg2: VALUE: set the OPTION_NAME to the VALUE")
+        sbd:log_info("command: 'reset': sets all options to the default values")
     elseif cmd == "get" then
-        if sdb:contains(db, args[1]) then
-            sdb:log_info(args[1] .. " = ", db[args[1]])
+        if sbd:contains(db, args[1]) then
+            sbd:log_info(args[1] .. " = ", db[args[1]])
         elseif args[1] == "all" then
             table.foreach(db, function(k, v)
-                sdb:log_info(k .. " = ", v)
+                sbd:log_info(k .. " = ", v)
             end)
         else
-            sdb:log_error("unknown property: ", args[1])
+            sbd:log_error("unknown property: ", args[1])
         end
     elseif cmd == "set" then
-        if sdb:contains(data.Options, args[1]) then
+        if sbd:contains(data.Options, args[1]) then
             local val
 
             if data.Options[args[1]].type == "boolean" then
@@ -65,17 +65,17 @@ function addon:HandleSlashCommand(msg)
             elseif data.Options[args[1]].type == "number" then
                 val = tonumber(args[2])
 
-                if sdb:contains(data.Options[args[1]], "step") then
+                if sbd:contains(data.Options[args[1]], "step") then
                     val = val - (val % data.Options[args[1]].step)
                 end
 
-                if sdb:contains(data.Options[args[1]], "min") then
+                if sbd:contains(data.Options[args[1]], "min") then
                     if val < data.Options[args[1]].min then
                         val = data.Options[args[1]].min
                     end
                 end
 
-                if sdb:contains(data.Options[args[1]], "max") then
+                if sbd:contains(data.Options[args[1]], "max") then
                     if val > data.Options[args[1]].max then
                         val = data.Options[args[1]].max
                     end
@@ -86,50 +86,50 @@ function addon:HandleSlashCommand(msg)
 
             db[args[1]] = val
 
-            sdb:log_info(args[1] .. " = ", db[args[1]])
+            sbd:log_info(args[1] .. " = ", db[args[1]])
 
             self:OnOptionsUpdated()
         else
-            sdb:log_error("unknown setting: " .. args[1])
+            sbd:log_error("unknown setting: " .. args[1])
         end
     elseif cmd == "reset" then
         self:ResetToDefaults()
 
         table.foreach(db, function(k, v)
-            sdb:log_info(k .. " = ", v)
+            sbd:log_info(k .. " = ", v)
         end)
 
         self:OnOptionsUpdated()
     elseif cmd == "locals" then
-        sdb:log_debug("class = ", class)
-        sdb:log_debug("classIndex = ", classIndex)
-        sdb:log_debug("classNameLocalized = ", classNameLocalized)
-        sdb:log_debug("inParty = ", inParty)
-        sdb:log_debug("inRaid = ", inRaid)
-        sdb:log_debug("maxHeight = ", maxHeight)
-        sdb:log_debug("maxUnitFrames = ", maxUnitFrames)
-        sdb:log_debug("maxWidth = ", maxWidth)
-        sdb:log_debug("playerRole = ", playerRole)
-        sdb:log_debug("spec = ", spec)
-        sdb:log_debug("specIndex = ", specIndex)
-        sdb:log_debug("tauntSpellId = ", tauntSpellId)
-        sdb:log_debug("tauntSpellName = ", tauntSpellName)
-        sdb:log_debug("threatPercentDivisor = ", threatPercentDivisor)
-        sdb:log_debug("unitFrameColumnCount = ", unitFrameColumnCount)
+        sbd:log_debug("class = ", class)
+        sbd:log_debug("classIndex = ", classIndex)
+        sbd:log_debug("classNameLocalized = ", classNameLocalized)
+        sbd:log_debug("inParty = ", inParty)
+        sbd:log_debug("inRaid = ", inRaid)
+        sbd:log_debug("maxHeight = ", maxHeight)
+        sbd:log_debug("maxUnitFrames = ", maxUnitFrames)
+        sbd:log_debug("maxWidth = ", maxWidth)
+        sbd:log_debug("playerRole = ", playerRole)
+        sbd:log_debug("spec = ", spec)
+        sbd:log_debug("specIndex = ", specIndex)
+        sbd:log_debug("tauntSpellId = ", tauntSpellId)
+        sbd:log_debug("tauntSpellName = ", tauntSpellName)
+        sbd:log_debug("threatPercentDivisor = ", threatPercentDivisor)
+        sbd:log_debug("unitFrameColumnCount = ", unitFrameColumnCount)
 
-        sdb:log_debug("groupGuidList:")
-        sdb:log_debug_table(groupGuidList)
+        sbd:log_debug("groupGuidList:")
+        sbd:log_debug_table(groupGuidList)
 
-        sdb:log_debug("db:")
-        sdb:log_debug_table(db)
+        sbd:log_debug("db:")
+        sbd:log_debug_table(db)
     else
-        sdb:log_error("command does not exist:", cmd)
-        sdb:log_info("try '/tankaddon help' for help with slash commands")
+        sbd:log_error("command does not exist:", cmd)
+        sbd:log_info("try '/tankaddon help' for help with slash commands")
     end
 end
 
 function addon:ResetToDefaults()
-    for k, v in pairs(sdb:GetOptionDefaults(data.Options)) do
+    for k, v in pairs(sbd:GetOptionDefaults(data.Options)) do
         db[k] = v
     end
 end
@@ -159,19 +159,19 @@ end)
 
 -- addon functions:
 function addon:SetupOptions()
-    sdb:log_debug("SetupOptions")
+    sbd:log_debug("SetupOptions")
 
-    sdb:GenerateOptionsInterface(self, data.Options, db, function()
+    sbd:GenerateOptionsInterface(self, data.Options, db, function()
         self:OnOptionsUpdated()
     end)
 end
 
 function addon:CreateFrames()
-    sdb:log_debug("CreateFrames")
+    sbd:log_debug("CreateFrames")
 
     maxWidth = ((db.width + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
     maxHeight = ((db.height + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
-    sdb:log_debug("maxWidth: ", maxWidth, ", maxHeight: ", maxHeight)
+    sbd:log_debug("maxWidth: ", maxWidth, ", maxHeight: ", maxHeight)
 
     self.GroupFrame =
         CreateFrame("Frame", "TankAddonGroupFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
@@ -229,7 +229,7 @@ function addon:CreateFrames()
         if child then
             child:SetThreatPercent(threatPct)
         else
-            sdb:log_error("UpdateThreatForUnit nil child for unit:", unit, ", threatPct:", threatPct)
+            sbd:log_error("UpdateThreatForUnit nil child for unit:", unit, ", threatPct:", threatPct)
         end
     end
 
@@ -303,12 +303,12 @@ function addon:CreateFrames()
 end
 
 function addon:OnOptionsUpdated()
-    sdb:log_debug("OnOptionsUpdated")
+    sbd:log_debug("OnOptionsUpdated")
 
     maxWidth = ((db.width + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
     maxHeight = ((db.height + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
 
-    local unitCount = sdb:count_table_pairs(groupGuidList)
+    local unitCount = sbd:count_table_pairs(groupGuidList)
     local groupFrameWidth = (db.width + (db.unit_padding)) * unitCount
     local groupFrameHeight = db.height
 
@@ -356,7 +356,7 @@ function addon:OnOptionsUpdated()
     end
 
 function addon:UpdatePlayerSpec()
-    sdb:log_debug("UpdatePlayerSpec")
+    sbd:log_debug("UpdatePlayerSpec")
 
     specIndex = GetSpecialization()
     spec = specIndex and select(2, GetSpecializationInfo(specIndex)) or "None"
@@ -367,7 +367,7 @@ function addon:UpdatePlayerSpec()
 end
 
 function addon:UpdatePlayerGroupState()
-    sdb:log_debug("UpdatePlayerGroupState")
+    sbd:log_debug("UpdatePlayerGroupState")
 
     inParty = IsInGroup()
     inRaid = IsInRaid()
@@ -375,7 +375,7 @@ function addon:UpdatePlayerGroupState()
 end
 
 function addon:UpdateGroupGuidList()
-    sdb:log_debug("UpdateGroupGuidList")
+    sbd:log_debug("UpdateGroupGuidList")
 
     wipe(groupGuidList)
 
@@ -430,11 +430,11 @@ function addon:UpdateGroupGuidList()
 end
 
 function addon:UpdateGroupFrameUnits()
-    sdb:log_debug("UpdateGroupFrameUnits")
+    sbd:log_debug("UpdateGroupFrameUnits")
 
     if groupGuidList then
-        local unitCount = sdb:count_table_pairs(groupGuidList)
-        sdb:log_debug("unitCount:", unitCount)
+        local unitCount = sbd:count_table_pairs(groupGuidList)
+        sbd:log_debug("unitCount:", unitCount)
 
         local groupFrameWidth = (db.width + (db.unit_padding)) * unitCount
         local groupFrameHeight = db.height
@@ -482,7 +482,7 @@ function addon:UpdateGroupFrameUnits()
                 unitFrame.text:SetText(UnitName(unit))
                 unitFrame:Show()
             else
-                sdb:log_debug("UpdateGroupFrameUnits nil unitFrame for unit:", unit)
+                sbd:log_debug("UpdateGroupFrameUnits nil unitFrame for unit:", unit)
             end
 
             unitFrameIndex = unitFrameIndex + 1
@@ -491,7 +491,7 @@ function addon:UpdateGroupFrameUnits()
 end
 
 function addon:GetGroupUnit(unit)
-    sdb:log_debug("GetGroupUnit: ", unit)
+    sbd:log_debug("GetGroupUnit: ", unit)
 
     if groupGuidList then
         if groupGuidList[unit] or groupGuidList[UnitGUID(unit)] then
@@ -509,7 +509,7 @@ function addon:GetGroupUnit(unit)
 end
 
 function addon:InGroup(unit)
-    sdb:log_debug("InGroup: ", unit)
+    sbd:log_debug("InGroup: ", unit)
 
     if self:GetGroupUnit(unit) then
         return true
@@ -519,7 +519,7 @@ function addon:InGroup(unit)
 end
 
 function addon:UpdateUnitFramesThreat()
-    sdb:log_debug("UpdateUnitFramesThreat")
+    sbd:log_debug("UpdateUnitFramesThreat")
 
     if not inRaid then
         local playerIsTanking, playerThreatStatus, playerThreatPct, playerRawThreatPct, playerThreatValue =
@@ -549,23 +549,23 @@ end
 -- event functions:
 function addon:ADDON_LOADED(addOnName)
     if addOnName == title then
-        sdb:log_debug("ADDON_LOADED")
-        sdb:log_info(title .. " v" .. version .. " loaded.")
+        sbd:log_debug("ADDON_LOADED")
+        sbd:log_info(title .. " v" .. version .. " loaded.")
 
-        db = sdb:GetOptionDefaults(data.Options)
+        db = sbd:GetOptionDefaults(data.Options)
 
         if TankAddonVars then
             db = TankAddonVars
         end
 
-        sdb:log_debug("saved variables:")
-        sdb:log_debug_table(db)
+        sbd:log_debug("saved variables:")
+        sbd:log_debug_table(db)
 
         screenWidth = GetScreenWidth() * UIParent:GetEffectiveScale()
-        sdb:log_debug("screenWidth: ", screenWidth)
+        sbd:log_debug("screenWidth: ", screenWidth)
 
         screenHeight = GetScreenHeight() * UIParent:GetEffectiveScale()
-        sdb:log_debug("screenHeight: ", screenHeight)
+        sbd:log_debug("screenHeight: ", screenHeight)
 
         self:SetupOptions()
         self:CreateFrames()
@@ -577,7 +577,7 @@ function addon:PLAYER_LOGOUT()
 end
 
 function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
-    sdb:log_debug("PLAYER_ENTERING_WORLD")
+    sbd:log_debug("PLAYER_ENTERING_WORLD")
 
     classNameLocalized, class, classIndex = UnitClass("player")
 
@@ -590,12 +590,12 @@ function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)
 end
 
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
-    sdb:log_debug("ACTIVE_TALENT_GROUP_CHANGED")
+    sbd:log_debug("ACTIVE_TALENT_GROUP_CHANGED")
     self:UpdatePlayerSpec()
 end
 
 function addon:GROUP_ROSTER_UPDATE()
-    sdb:log_debug("GROUP_ROSTER_UPDATE")
+    sbd:log_debug("GROUP_ROSTER_UPDATE")
     self:UpdatePlayerSpec()
     self:UpdatePlayerGroupState()
     self:UpdateGroupGuidList()
@@ -603,7 +603,7 @@ function addon:GROUP_ROSTER_UPDATE()
 end
 
 function addon:COMBAT_LOG_EVENT_UNFILTERED(...)
-    -- sdb:log_debug("COMBAT_LOG_EVENT_UNFILTERED")
+    -- sbd:log_debug("COMBAT_LOG_EVENT_UNFILTERED")
     -- local timestamp,
     --     subevent,
     --     _,
@@ -616,28 +616,28 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(...)
     --     destFlags,
     --     destRaidFlags = CombatLogGetCurrentEventInfo()
     -- if self:InGroup(destGUID) then
-    --     sdb:log_debug("CLEU:", subevent, sourceName, destName)
+    --     sbd:log_debug("CLEU:", subevent, sourceName, destName)
     -- end
     -- self:UpdateUnitFramesThreat()
 end
 
 function addon:UNIT_THREAT_LIST_UPDATE(_, target)
-    sdb:log_debug("UNIT_THREAT_LIST_UPDATE")
+    sbd:log_debug("UNIT_THREAT_LIST_UPDATE")
     self:UpdateUnitFramesThreat()
 end
 
 function addon:UNIT_THREAT_SITUATION_UPDATE(_, target)
-    sdb:log_debug("UNIT_THREAT_SITUATION_UPDATE")
+    sbd:log_debug("UNIT_THREAT_SITUATION_UPDATE")
     self:UpdateUnitFramesThreat()
 end
 
 function addon:PLAYER_LEAVE_COMBAT()
-    sdb:log_debug("PLAYER_LEAVE_COMBAT")
+    sbd:log_debug("PLAYER_LEAVE_COMBAT")
     self.GroupFrame:ResetUnitFramesThreat()
 end
 
 function addon:PLAYER_REGEN_ENABLED()
-    sdb:log_debug("PLAYER_REGEN_ENABLED")
+    sbd:log_debug("PLAYER_REGEN_ENABLED")
     self.GroupFrame:ResetUnitFramesThreat()
 
     if not db.always_show or not db.enabled then
@@ -646,7 +646,7 @@ function addon:PLAYER_REGEN_ENABLED()
 end
 
 function addon:PLAYER_REGEN_DISABLED()
-    sdb:log_debug("PLAYER_REGEN_DISABLED")
+    sbd:log_debug("PLAYER_REGEN_DISABLED")
     self.GroupFrame:ResetUnitFramesThreat()
 
     if db.enabled and not self.GroupFrame:IsVisible() then

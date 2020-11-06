@@ -6,5 +6,5 @@
 ## SavedVariablesPerCharacter: TankAddonVars
 
 data.lua
-sdb.lua
+sbd.lua
 addon.lua

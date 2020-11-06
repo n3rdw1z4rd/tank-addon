@@ -1,38 +1,38 @@
 local debug = false
 
-sdb = {}
+sbd = {}
 db = {}
 
-function sdb:get_debug()
+function sbd:get_debug()
     return (debug)
 end
 
-function sdb:set_debug(v)
+function sbd:set_debug(v)
     v = v or true
     debug = v
 end
 
-function sdb:log_debug(...)
+function sbd:log_debug(...)
     if debug then
         print("|cff888888", ...)
     end
 end
 
-function sdb:log_info(...)
+function sbd:log_info(...)
     print("|cff00ffff", ...)
 end
 
-function sdb:log_error(...)
+function sbd:log_error(...)
     print("|cffff8888", ...)
 end
 
-function sdb:log_debug_table(tbl)
+function sbd:log_debug_table(tbl)
     table.foreach(tbl, function(k, v)
-        sdb:log_debug(k .. ": ", v)
+        sbd:log_debug(k .. ": ", v)
     end)
 end
 
-function sdb:count_table_pairs(tbl)
+function sbd:count_table_pairs(tbl)
     local count = 0
 
     for _ in pairs(tbl) do
@@ -42,7 +42,7 @@ function sdb:count_table_pairs(tbl)
     return count
 end
 
-function sdb:contains(tbl, key)
+function sbd:contains(tbl, key)
     for k in pairs(tbl) do
         if k == key then
             return true
@@ -52,7 +52,7 @@ function sdb:contains(tbl, key)
     return false
 end
 
-function sdb:GetOptionDefaults(options)
+function sbd:GetOptionDefaults(options)
     local defaults = {}
 
     for k, v in pairs(options) do
@@ -62,7 +62,7 @@ function sdb:GetOptionDefaults(options)
     return defaults
 end
 
-function sdb:GenerateOptionsInterface(addon, options, db, onUpdated)
+function sbd:GenerateOptionsInterface(addon, options, db, onUpdated)
     local addonTitle = addon:GetName()
     local optionsPanelTitle = addonTitle .. "Options"
 
