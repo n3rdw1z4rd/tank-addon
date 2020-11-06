@@ -555,7 +555,9 @@ function addon:ADDON_LOADED(addOnName)
         db = sbd:GetOptionDefaults(data.Options)
 
         if TankAddonVars then
-            db = TankAddonVars
+            for k, v in pairs(TankAddonVars) do
+                db[k] = v
+            end
         end
 
         sbd:log_debug("saved variables:")
