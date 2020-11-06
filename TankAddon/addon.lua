@@ -343,17 +343,17 @@ function addon:OnOptionsUpdated()
 
         local unitName = child:GetName()
 
-            child.text:SetFont(data.Font, db.font_size)
-            child:SetPoint("BOTTOMLEFT", self.GroupFrame, offsetX, offsetY)
+        child.text:SetFont(data.Font, db.font_size)
+        child:SetPoint("BOTTOMLEFT", self.GroupFrame, offsetX, offsetY)
 
-            offsetX = offsetX + (db.width + db.unit_padding)
+        offsetX = offsetX + (db.width + db.unit_padding)
 
-            if offsetX > maxWidth then
-                offsetX = db.frame_padding
-                offsetY = offsetY + (db.height + db.unit_padding)
-            end
+        if offsetX > maxWidth then
+            offsetX = db.frame_padding
+            offsetY = offsetY + (db.height + db.unit_padding)
         end
     end
+end
 
 function addon:UpdatePlayerSpec()
     sbd:log_debug("UpdatePlayerSpec")
@@ -535,15 +535,15 @@ function addon:UpdateUnitFramesThreat()
     if groupGuidList then
         for unit, data in pairs(groupGuidList) do
             if UnitExists(unit) then
-            local isTanking, threatStatus, threatPct, rawThreatPct, threatValue =
-                UnitDetailedThreatSituation(unit, data["target"])
+                local isTanking, threatStatus, threatPct, rawThreatPct, threatValue =
+                    UnitDetailedThreatSituation(unit, data["target"])
 
-            if threatPct then
-                self.GroupFrame:UpdateThreatForUnit(unit, (threatPct / threatPercentDivisor))
+                if threatPct then
+                    self.GroupFrame:UpdateThreatForUnit(unit, (threatPct / threatPercentDivisor))
+                end
             end
         end
     end
-end
 end
 
 -- event functions:
