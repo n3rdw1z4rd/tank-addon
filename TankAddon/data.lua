@@ -90,17 +90,31 @@ data.Options = {
         step = 2,
         default = 12,
         label = "Font Size"
+    },
+    unit_columns = {
+        type = "number",
+        min = 1,
+        max = 40,
+        step = 1,
+        default = 5,
+        label = "Unit Columns"
+    },
+    unit_rows = {
+        type = "number",
+        min = 1,
+        max = 40,
+        step = 1,
+        default = 5,
+        label = "Unit rows"
+    },
+    grow_left = {
+        type = "boolean",
+        default = false,
+        label = "Grow Left"
+    },
+    grow_down = {
+        type = "boolean",
+        default = false,
+        label = "Grow Down"
     }
-    -- ,
-    -- vertical_layout = {
-    --     type = "boolean",
-    --     default = false,
-    --     label = "Vertical Layout"
-    -- },
-    -- grow_direction = {
-    --     type = "select",
-    --     values = { "Up", "Down", "Left", "Right" },
-    --     default = "Up",
-    --     label = "Grow Direction"
-    -- }
 }

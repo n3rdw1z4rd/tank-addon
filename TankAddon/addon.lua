@@ -1,7 +1,7 @@
 local title = ...
 local version = GetAddOnMetadata(title, "Version")
 
--- sdb:set_debug()
+sbd:set_debug()
 
 -- local debug variable:
 local debugUnitCount = 5
@@ -21,7 +21,7 @@ local unitFrameColumnCount = 5
 local groupGuidList = {}
 
 -- addon:
-local addon = CreateFrame("Frame", title)
+local addon = CreateFrame("Frame", title, UIParent) -- instead of UIParent, try using the health bar under character
 addon.version = version
 
 -- slash commands:
@@ -161,19 +161,20 @@ end)
 function addon:CreateFrames()
     sbd:log_debug("CreateFrames")
 
-    maxWidth = ((db.width + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
-    maxHeight = ((db.height + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
+    maxWidth = ((db.width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
+    maxHeight = ((db.height + (db.unit_padding)) * db.unit_rows) - db.unit_padding
     sbd:log_debug("maxWidth: ", maxWidth, ", maxHeight: ", maxHeight)
 
-    self.GroupFrame =
-        CreateFrame("Frame", "TankAddonGroupFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+    if self.GroupFrame then
+        self.GroupFrame.destroy()
+        self.GroupFrame = nil
+    end
 
+    self.GroupFrame = CreateFrame("Frame", "TankAddonGroupFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     self.GroupFrame:SetFrameStrata("MEDIUM")
     self.GroupFrame:SetMovable(true)
     self.GroupFrame:EnableMouse(true)
-    self.GroupFrame:SetBackdrop({
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background"
-    })
+    self.GroupFrame:SetBackdrop({ bgFile = "Interface/Tooltips/UI-Tooltip-Background" })
     self.GroupFrame:SetBackdropColor(0, 0, 0, 0.8)
     self.GroupFrame:ClearAllPoints()
     self.GroupFrame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", screenWidth / 2, screenHeight / 2)
@@ -562,9 +563,10 @@ function addon:ADDON_LOADED(addOnName)
         sbd:log_debug("screenHeight: ", screenHeight)
 
         sbd:GenerateOptionsInterface(self, data.Options, db, function()
-            self:OnOptionsUpdated()
+            self:CreateFrames()
+            -- self:OnOptionsUpdated()
         end)
-        
+
         self:CreateFrames()
     end
 end
