@@ -158,14 +158,6 @@ addon:SetScript("OnEvent", function(self, event, ...)
 end)
 
 -- addon functions:
-function addon:SetupOptions()
-    sbd:log_debug("SetupOptions")
-
-    sbd:GenerateOptionsInterface(self, data.Options, db, function()
-        self:OnOptionsUpdated()
-    end)
-end
-
 function addon:CreateFrames()
     sbd:log_debug("CreateFrames")
 
@@ -569,7 +561,10 @@ function addon:ADDON_LOADED(addOnName)
         screenHeight = GetScreenHeight() * UIParent:GetEffectiveScale()
         sbd:log_debug("screenHeight: ", screenHeight)
 
-        self:SetupOptions()
+        sbd:GenerateOptionsInterface(self, data.Options, db, function()
+            self:OnOptionsUpdated()
+        end)
+        
         self:CreateFrames()
     end
 end
