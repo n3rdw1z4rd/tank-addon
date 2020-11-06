@@ -1,6 +1,8 @@
 local title = ...
 local version = GetAddOnMetadata(title, "Version")
 
+-- sdb:set_debug()
+
 -- local debug variable:
 local debugUnitCount = 5
 
