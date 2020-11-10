@@ -39,7 +39,7 @@ data.Options = {
     enabled = {
         type = "boolean",
         default = true,
-        label = "Enabled"
+        label = "Addon Enabled"
     },
     locked = {
         type = "boolean",
@@ -57,9 +57,9 @@ data.Options = {
         max = 15,
         step = 1,
         default = 5,
-        label = "Group Frame Padding"
+        label = "Group Frame Border"
     },
-    width = {
+    unit_width = {
         type = "number",
         min = 50,
         max = 120,
@@ -67,7 +67,7 @@ data.Options = {
         default = 80,
         label = "Unit Frame Width"
     },
-    height = {
+    unit_height = {
         type = "number",
         min = 15,
         max = 50,
@@ -78,7 +78,7 @@ data.Options = {
     unit_padding = {
         type = "number",
         min = 0,
-        max = 10,
+        max = 15,
         step = 1,
         default = 5,
         label = "Unit Frame Padding"
@@ -98,23 +98,48 @@ data.Options = {
         step = 1,
         default = 5,
         label = "Unit Columns"
-    },
-    unit_rows = {
-        type = "number",
-        min = 1,
-        max = 40,
-        step = 1,
-        default = 5,
-        label = "Unit rows"
-    },
-    grow_left = {
-        type = "boolean",
-        default = false,
-        label = "Grow Left"
-    },
-    grow_down = {
-        type = "boolean",
-        default = false,
-        label = "Grow Down"
     }
+}
+
+data.RandomNames = {
+    "Zandra",
+    "Antonio",
+    "Carmelia",
+    "Fritz",
+    "Jacalyn",
+    "Ralph",
+    "Rosemarie",
+    "Treena",
+    "Jenice",
+    "Latisha",
+    "Neda",
+    "Dianna",
+    "Hae",
+    "Katina",
+    "Miguel",
+    "Travis",
+    "Pamelia",
+    "Sharyl",
+    "Dann",
+    "Verna",
+    "Hector",
+    "Chanda",
+    "Arvilla",
+    "Bryce",
+    "Vincent",
+    "Roxie",
+    "Louvenia",
+    "Raina",
+    "Russel",
+    "Shelby",
+    "Yoshiko",
+    "Tonie",
+    "Karly",
+    "Bradly",
+    "Marya",
+    "Dessie",
+    "Vicenta",
+    "Tera",
+    "Tilda",
+    "Lauren"
 }

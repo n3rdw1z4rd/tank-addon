@@ -4,10 +4,10 @@ local version = GetAddOnMetadata(title, "Version")
 sbd:set_debug()
 
 -- local debug variable:
-local debugUnitCount = 5
+local DEBUG = sbd:get_debug()
+local debugUnitCount = 0
 
 -- local variables:
-local DEBUG = sbd:get_debug()
 local screenWidth, screenHeight
 local playerRole
 local threatPercentDivisor = 100
@@ -15,7 +15,7 @@ local classNameLocalized, class, classIndex
 local specIndex, spec
 local tauntSpellId, tauntSpellName
 local inParty, inRaid
-local maxWidth, maxHeight
+local maxWidth
 local maxUnitFrames = 40
 local unitFrameColumnCount = 5
 local groupGuidList = {}
@@ -106,7 +106,6 @@ function addon:HandleSlashCommand(msg)
         sbd:log_debug("classNameLocalized = ", classNameLocalized)
         sbd:log_debug("inParty = ", inParty)
         sbd:log_debug("inRaid = ", inRaid)
-        sbd:log_debug("maxHeight = ", maxHeight)
         sbd:log_debug("maxUnitFrames = ", maxUnitFrames)
         sbd:log_debug("maxWidth = ", maxWidth)
         sbd:log_debug("playerRole = ", playerRole)
@@ -160,11 +159,10 @@ end)
 -- addon functions:
 function addon:CreateFrames()
     sbd:log_debug("CreateFrames")
-
-    maxWidth = ((db.width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
-    maxHeight = ((db.height + (db.unit_padding)) * db.unit_rows) - db.unit_padding
-    sbd:log_debug("maxWidth: ", maxWidth, ", maxHeight: ", maxHeight)
-
+    
+    maxWidth = ((db.unit_width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
+    sbd:log_debug("maxWidth: ", maxWidth)
+    
     if self.GroupFrame then
         self.GroupFrame.destroy()
         self.GroupFrame = nil
@@ -235,7 +233,11 @@ function addon:CreateFrames()
     function self.GroupFrame:ResetUnitFrames()
         for _, child in ipairs({self:GetChildren()}) do
             child.unit = nil
-            child.text:SetText(nil)
+
+            if not DEBUG then
+                child.text:SetText(nil)
+            end
+
             child:Hide()
         end
     end
@@ -246,10 +248,11 @@ function addon:CreateFrames()
     for i = 1, maxUnitFrames do
         local button = CreateFrame("Button", format("UnitFrame%d", i), self.GroupFrame, BackdropTemplateMixin and "BackdropTemplate, SecureActionButtonTemplate")
 
-        button:SetWidth(db.width)
-        button:SetHeight(db.height)
+        button:SetWidth(db.unit_width)
+        button:SetHeight(db.unit_height)
         button:SetBackdrop({ bgFile = "Interface/Tooltips/UI-Tooltip-Background" })
         button:SetPoint("BOTTOMLEFT", parent, currentUnitOffsetX, currentUnitOffsetY)
+
         button.unit = nil
 
         button.texture = button:CreateTexture(nil, "PARENT")
@@ -260,6 +263,10 @@ function addon:CreateFrames()
         button.text = button:CreateFontString(nil, "ARTWORK")
         button.text:SetFont(data.Font, db.font_size)
         button.text:SetPoint("CENTER", button, "CENTER")
+
+        if DEBUG then
+            button.text:SetText(tostring(i))
+        end
 
         button.badge = button:CreateTexture(nil, "PARENT")
         button.badge:SetSize(20, 20)
@@ -284,11 +291,11 @@ function addon:CreateFrames()
             end
         end
 
-        currentUnitOffsetX = currentUnitOffsetX + (db.width + db.unit_padding)
-
+        currentUnitOffsetX = currentUnitOffsetX + (db.unit_width + db.unit_padding)
+        
         if currentUnitOffsetX > maxWidth then
             currentUnitOffsetX = db.frame_padding
-            currentUnitOffsetY = currentUnitOffsetY + (db.height + db.unit_padding)
+            currentUnitOffsetY = currentUnitOffsetY + (db.unit_height + db.unit_padding)
         end
     end
 
@@ -297,25 +304,23 @@ end
 
 function addon:OnOptionsUpdated()
     sbd:log_debug("OnOptionsUpdated")
-
-    maxWidth = ((db.width + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
-    maxHeight = ((db.height + (db.unit_padding)) * unitFrameColumnCount) - db.unit_padding
-
+    
     local unitCount = sbd:count_table_pairs(groupGuidList)
-    local groupFrameWidth = (db.width + (db.unit_padding)) * unitCount
-    local groupFrameHeight = db.height
+    maxWidth = ((db.unit_width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
 
-    if groupFrameWidth > maxWidth then
-        groupFrameWidth = maxWidth
-        local rows = math.floor(unitCount / unitFrameColumnCount)
-        if rows * unitFrameColumnCount < unitCount then
-            rows = rows + 1
-        end
-        groupFrameHeight = ((groupFrameHeight + db.unit_padding) * rows) - db.unit_padding
-    end
+    local columns = unitCount <= db.unit_columns and unitCount or db.unit_columns
+    local rows = columns <= db.unit_columns and 1 or math.ceil(unitCount / db.unit_columns)
 
-    groupFrameWidth = groupFrameWidth + (db.frame_padding * 2) - db.unit_padding
-    groupFrameHeight = groupFrameHeight + (db.frame_padding * 2)
+    
+    local groupFrameWidth = (db.unit_width + (db.unit_padding)) * columns
+    local groupFrameHeight = (db.unit_height + (db.unit_padding)) * rows
+
+    -- if (unitCount % db.unit_columns) > 0 then
+    --     groupFrameHeight = groupFrameHeight + (db.unit_height + (db.unit_padding))
+    -- end  - might not need if the math.ceil method works from rows definition
+
+    groupFrameWidth = groupFrameWidth + ((db.frame_padding * 2) + db.unit_padding)
+    groupFrameHeight = groupFrameHeight + ((db.frame_padding * 2) + db.unit_padding)
 
     self.GroupFrame:SetWidth(groupFrameWidth)
     self.GroupFrame:SetHeight(groupFrameHeight)
@@ -330,8 +335,8 @@ function addon:OnOptionsUpdated()
     local offsetY = db.frame_padding
 
     for _, child in ipairs({self.GroupFrame:GetChildren()}) do
-        child:SetWidth(db.width)
-        child:SetHeight(db.height)
+        child:SetWidth(db.unit_width)
+        child:SetHeight(db.unit_height)
         child.text:SetFont(data.Font, db.font_size)
 
         local unitName = child:GetName()
@@ -339,11 +344,11 @@ function addon:OnOptionsUpdated()
         child.text:SetFont(data.Font, db.font_size)
         child:SetPoint("BOTTOMLEFT", self.GroupFrame, offsetX, offsetY)
 
-        offsetX = offsetX + (db.width + db.unit_padding)
+        offsetX = offsetX + (db.unit_width + db.unit_padding)
 
         if offsetX > maxWidth then
             offsetX = db.frame_padding
-            offsetY = offsetY + (db.height + db.unit_padding)
+            offsetY = offsetY + (db.unit_height + db.unit_padding)
         end
     end
 end
@@ -409,13 +414,17 @@ function addon:UpdateGroupGuidList()
     elseif DEBUG then
         local count = debugUnitCount > 0 and debugUnitCount or maxUnitFrames
 
-        for i = 1, count - 1 do -- minus one here to account for added player unit frame
+        if groupGuidList["player"] then
+            count = count - 1 -- minus one here to account for added player unit frame
+        end
+
+        for i = 1, count do
             local unit = "player"
             local target = "target"
 
             groupGuidList[unit .. i] = {
                 guid = UnitGUID("player"),
-                name = UnitName("player"),
+                name = data.RandomNames[i],
                 target = target
             }
         end
@@ -429,8 +438,8 @@ function addon:UpdateGroupFrameUnits()
         local unitCount = sbd:count_table_pairs(groupGuidList)
         sbd:log_debug("unitCount:", unitCount)
 
-        local groupFrameWidth = (db.width + (db.unit_padding)) * unitCount
-        local groupFrameHeight = db.height
+        local groupFrameWidth = (db.unit_width + (db.unit_padding)) * unitCount
+        local groupFrameHeight = db.unit_height
 
         if groupFrameWidth > maxWidth then
             groupFrameWidth = maxWidth
@@ -446,39 +455,53 @@ function addon:UpdateGroupFrameUnits()
 
         self.GroupFrame:SetWidth(groupFrameWidth)
         self.GroupFrame:SetHeight(groupFrameHeight)
-
         self.GroupFrame:ResetUnitFrames()
 
-        local unitFrameIndex = 1
-        local unitFrames = self.GroupFrame:GetChildren()
+        -- set local player to first unit frame:
+        local unitFrame = self.GroupFrame:GetUnitFrame("UnitFrame1")
+        unitFrame:SetBackdropColor(0, 0, 0, 1)
+        unitFrame.unit = "player"
+        unitFrame:SetRole(UnitGroupRolesAssigned("player"))
+        unitFrame.text:SetText(UnitName("player"))
+        unitFrame:Show()
+
+        local unitFrameIndex = 2 -- starting with 2 since local player takes 1
 
         for unit, data in pairs(groupGuidList) do
-            local unitFrame = self.GroupFrame:GetUnitFrame(format("UnitFrame%d", unitFrameIndex))
-            local unitName = data["name"]
-
-            if unitFrame then
-                unitFrame:SetBackdropColor(0, 0, 0, 1)
-
-                if unitName ~= UnitName("player") then
-                    if playerRole == "TANK" and tauntSpellName then
-                        unitFrame:SetAttribute("type", "spell")
-                        unitFrame:SetAttribute("spell", tauntSpellName)
-                        unitFrame:SetAttribute("unit", data["target"])
-                    else
-                        unitFrame:SetAttribute("type", "assist")
-                        unitFrame:SetAttribute("unit", data["target"])
+            if unit ~= "player" then
+                local unitName = data["name"]
+                unitFrame = self.GroupFrame:GetUnitFrame(format("UnitFrame%d", unitFrameIndex))
+    
+                if unitFrame then
+                    unitFrame:SetBackdropColor(0, 0, 0, 1)
+    
+                    if unitName ~= UnitName("player") then
+                        if playerRole == "TANK" and tauntSpellName then
+                            unitFrame:SetAttribute("type", "spell")
+                            unitFrame:SetAttribute("spell", tauntSpellName)
+                            unitFrame:SetAttribute("unit", data["target"])
+                        else
+                            unitFrame:SetAttribute("type", "assist")
+                            unitFrame:SetAttribute("unit", data["target"])
+                        end
                     end
+    
+                    unitFrame.unit = unit
+                    unitFrame:SetRole(UnitGroupRolesAssigned(unit))
+    
+                    if DEBUG then
+                        unitFrame.text:SetText(strjoin("_", tostring(unitFrameIndex), UnitName(unit) or unitName))
+                    else
+                        unitFrame.text:SetText(UnitName(unit))
+                    end
+    
+                    unitFrame:Show()
+                else
+                    sbd:log_debug("UpdateGroupFrameUnits nil unitFrame for unit:", unit)
                 end
-
-                unitFrame.unit = unit
-                unitFrame:SetRole(UnitGroupRolesAssigned(unit))
-                unitFrame.text:SetText(UnitName(unit))
-                unitFrame:Show()
-            else
-                sbd:log_debug("UpdateGroupFrameUnits nil unitFrame for unit:", unit)
+    
+                unitFrameIndex = unitFrameIndex + 1
             end
-
-            unitFrameIndex = unitFrameIndex + 1
         end
     end
 end
@@ -563,8 +586,7 @@ function addon:ADDON_LOADED(addOnName)
         sbd:log_debug("screenHeight: ", screenHeight)
 
         sbd:GenerateOptionsInterface(self, data.Options, db, function()
-            self:CreateFrames()
-            -- self:OnOptionsUpdated()
+            self:OnOptionsUpdated()
         end)
 
         self:CreateFrames()
