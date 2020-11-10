@@ -1,11 +1,11 @@
 local title = ...
 local version = GetAddOnMetadata(title, "Version")
 
-sbd:set_debug()
+-- sbd:set_debug()
 
 -- local debug variable:
 local DEBUG = sbd:get_debug()
-local debugUnitCount = 0
+local debugUnitCount = 10
 
 -- local variables:
 local screenWidth, screenHeight
@@ -15,9 +15,7 @@ local classNameLocalized, class, classIndex
 local specIndex, spec
 local tauntSpellId, tauntSpellName
 local inParty, inRaid
-local maxWidth
 local maxUnitFrames = 40
-local unitFrameColumnCount = 5
 local groupGuidList = {}
 
 -- addon:
@@ -107,14 +105,12 @@ function addon:HandleSlashCommand(msg)
         sbd:log_debug("inParty = ", inParty)
         sbd:log_debug("inRaid = ", inRaid)
         sbd:log_debug("maxUnitFrames = ", maxUnitFrames)
-        sbd:log_debug("maxWidth = ", maxWidth)
         sbd:log_debug("playerRole = ", playerRole)
         sbd:log_debug("spec = ", spec)
         sbd:log_debug("specIndex = ", specIndex)
         sbd:log_debug("tauntSpellId = ", tauntSpellId)
         sbd:log_debug("tauntSpellName = ", tauntSpellName)
         sbd:log_debug("threatPercentDivisor = ", threatPercentDivisor)
-        sbd:log_debug("unitFrameColumnCount = ", unitFrameColumnCount)
 
         sbd:log_debug("groupGuidList:")
         sbd:log_debug_table(groupGuidList)
@@ -145,7 +141,6 @@ addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 addon:RegisterEvent("GROUP_ROSTER_UPDATE")
 addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
-addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
 addon:RegisterEvent("PLAYER_REGEN_ENABLED")
 addon:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -160,8 +155,7 @@ end)
 function addon:CreateFrames()
     sbd:log_debug("CreateFrames")
     
-    maxWidth = ((db.unit_width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
-    sbd:log_debug("maxWidth: ", maxWidth)
+    local maxWidth = (db.unit_width * db.unit_columns) + (db.unit_padding * (db.unit_columns - 1))
     
     if self.GroupFrame then
         self.GroupFrame.destroy()
@@ -305,22 +299,16 @@ end
 function addon:OnOptionsUpdated()
     sbd:log_debug("OnOptionsUpdated")
     
+    local maxWidth = (db.unit_width * db.unit_columns) + (db.unit_padding * (db.unit_columns - 1))
+    
     local unitCount = sbd:count_table_pairs(groupGuidList)
-    maxWidth = ((db.unit_width + (db.unit_padding)) * db.unit_columns) - db.unit_padding
-
     local columns = unitCount <= db.unit_columns and unitCount or db.unit_columns
     local rows = columns <= db.unit_columns and 1 or math.ceil(unitCount / db.unit_columns)
+    local groupFrameWidth = (db.unit_width * columns) + (db.unit_padding * (columns - 1))
+    local groupFrameHeight = (db.unit_height * rows) + (db.unit_padding * (rows - 1))
 
-    
-    local groupFrameWidth = (db.unit_width + (db.unit_padding)) * columns
-    local groupFrameHeight = (db.unit_height + (db.unit_padding)) * rows
-
-    -- if (unitCount % db.unit_columns) > 0 then
-    --     groupFrameHeight = groupFrameHeight + (db.unit_height + (db.unit_padding))
-    -- end  - might not need if the math.ceil method works from rows definition
-
-    groupFrameWidth = groupFrameWidth + ((db.frame_padding * 2) + db.unit_padding)
-    groupFrameHeight = groupFrameHeight + ((db.frame_padding * 2) + db.unit_padding)
+    groupFrameWidth = groupFrameWidth + (db.frame_padding * 2)
+    groupFrameHeight = groupFrameHeight + (db.frame_padding * 2)
 
     self.GroupFrame:SetWidth(groupFrameWidth)
     self.GroupFrame:SetHeight(groupFrameHeight)
@@ -351,6 +339,8 @@ function addon:OnOptionsUpdated()
             offsetY = offsetY + (db.unit_height + db.unit_padding)
         end
     end
+
+    self:UpdateGroupFrameUnits()
 end
 
 function addon:UpdatePlayerSpec()
@@ -436,21 +426,12 @@ function addon:UpdateGroupFrameUnits()
 
     if groupGuidList then
         local unitCount = sbd:count_table_pairs(groupGuidList)
-        sbd:log_debug("unitCount:", unitCount)
+        local columns = unitCount <= db.unit_columns and unitCount or db.unit_columns
+        local rows = math.ceil(unitCount / db.unit_columns)
+        local groupFrameWidth = (db.unit_width * columns) + (db.unit_padding * (columns - 1))
+        local groupFrameHeight = (db.unit_height * rows) + (db.unit_padding * (rows - 1))
 
-        local groupFrameWidth = (db.unit_width + (db.unit_padding)) * unitCount
-        local groupFrameHeight = db.unit_height
-
-        if groupFrameWidth > maxWidth then
-            groupFrameWidth = maxWidth
-            local rows = math.floor(unitCount / unitFrameColumnCount)
-            if rows * unitFrameColumnCount < unitCount then
-                rows = rows + 1
-            end
-            groupFrameHeight = ((groupFrameHeight + db.unit_padding) * rows) - db.unit_padding
-        end
-
-        groupFrameWidth = groupFrameWidth + (db.frame_padding * 2) - db.unit_padding
+        groupFrameWidth = groupFrameWidth + (db.frame_padding * 2)
         groupFrameHeight = groupFrameHeight + (db.frame_padding * 2)
 
         self.GroupFrame:SetWidth(groupFrameWidth)
@@ -621,25 +602,6 @@ function addon:GROUP_ROSTER_UPDATE()
     self:UpdatePlayerGroupState()
     self:UpdateGroupGuidList()
     self:UpdateGroupFrameUnits()
-end
-
-function addon:COMBAT_LOG_EVENT_UNFILTERED(...)
-    -- sbd:log_debug("COMBAT_LOG_EVENT_UNFILTERED")
-    -- local timestamp,
-    --     subevent,
-    --     _,
-    --     sourceGUID,
-    --     sourceName,
-    --     sourceFlags,
-    --     sourceRaidFlags,
-    --     destGUID,
-    --     destName,
-    --     destFlags,
-    --     destRaidFlags = CombatLogGetCurrentEventInfo()
-    -- if self:InGroup(destGUID) then
-    --     sbd:log_debug("CLEU:", subevent, sourceName, destName)
-    -- end
-    -- self:UpdateUnitFramesThreat()
 end
 
 function addon:UNIT_THREAT_LIST_UPDATE(_, target)
