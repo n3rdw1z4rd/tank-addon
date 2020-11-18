@@ -2,7 +2,7 @@
 ## Title: TankAddon
 ## Notes: Taunt target of high threat party/raid members.
 ## Author: sbd74
-## Version: 1.7.0
+## Version: 1.7.1
 ## SavedVariablesPerCharacter: TankAddonVars
 
 data.lua
