@@ -1,4 +1,4 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: TankAddon
 ## Notes: Taunt target of high threat party/raid members.
 ## Author: sbd74
