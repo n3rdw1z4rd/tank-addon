@@ -11,5 +11,6 @@ And a very special thanks to my fellow guildies of <UNDAUNTED> on Fenris who hel
 Devoile, Verro, Fezzie, Omgdots, Kayou, and others
 
 ## Installation
-- Download the ZIP and copy/move the `TankAddon` folder into your `World of Warcraft\_retail_\Interface\AddOns` folder.
-- (Re)Start World of Warcraft.
+* Download via the Releases link, or the ZIP
+* Copy/move the `TankAddon` folder into your `World of Warcraft\_retail_\Interface\AddOns` folder.
+* (Re)Start World of Warcraft.
