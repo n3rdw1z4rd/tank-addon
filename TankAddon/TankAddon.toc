@@ -1,7 +1,7 @@
 ## Interface: 90002
 ## Title: TankAddon
 ## Notes: Taunt target of high threat party/raid members.
-## Author: havoc74
+## Author: sbd74
 ## Version: 1.7.2
 ## SavedVariablesPerCharacter: TankAddonVars
 
