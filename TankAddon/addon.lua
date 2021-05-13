@@ -211,10 +211,11 @@ function addon:CreateFrames()
 
     function self.GroupFrame:UpdateThreatForUnit(unit, threatPct)
         local child = self:GetUnitFrameForUnit(unit)
+        
         if child then
             child:SetThreatPercent(threatPct)
         else
-            sbd:log_error("UpdateThreatForUnit nil child for unit:", unit, ", threatPct:", threatPct)
+            sbd:log_debug("UpdateThreatForUnit nil child for unit:", unit, ", threatPct:", threatPct)
         end
     end
 
