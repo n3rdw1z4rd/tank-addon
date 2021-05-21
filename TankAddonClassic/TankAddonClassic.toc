@@ -1,9 +1,9 @@
-## Interface: 90005
-## Title: TankAddon
+## Interface: 20501
+## Title: TankAddonClassic
 ## Notes: Taunt target of high threat party/raid members.
-## Author: sbd74
-## Version: 1.7.4
-## SavedVariablesPerCharacter: TankAddonVars
+## Author: sbd74/havoc74
+## Version: 0.1.0
+## SavedVariablesPerCharacter: TankAddonClassicVars
 
 data.lua
 sbd.lua

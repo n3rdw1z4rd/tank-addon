@@ -37,7 +37,7 @@ function addon:HandleSlashCommand(msg)
     sbd:log_debug("HandleSlashCommand: ", cmd, argsString)
 
     if cmd == "help" then
-        sbd:log_info("TankAddon v" .. version .. " slash command help")
+        sbd:log_info("TankAddonClassic v" .. version .. " slash command help")
         sbd:log_info("syntax: /tankaddon (or /ta) command arg1 arg2")
         sbd:log_info("command: 'help': this message")
         sbd:log_info(
@@ -162,7 +162,7 @@ function addon:CreateFrames()
         self.GroupFrame = nil
     end
 
-    self.GroupFrame = CreateFrame("Frame", "TankAddonGroupFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+    self.GroupFrame = CreateFrame("Frame", "TankAddonClassicGroupFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     self.GroupFrame:SetFrameStrata("MEDIUM")
     self.GroupFrame:SetMovable(true)
     self.GroupFrame:EnableMouse(true)
@@ -552,8 +552,8 @@ function addon:ADDON_LOADED(addOnName)
 
         db = sbd:GetOptionDefaults(data.Options)
 
-        if TankAddonVars then
-            for k, v in pairs(TankAddonVars) do
+        if TankAddonClassicVars then
+            for k, v in pairs(TankAddonClassicVars) do
                 db[k] = v
             end
         end
@@ -576,7 +576,7 @@ function addon:ADDON_LOADED(addOnName)
 end
 
 function addon:PLAYER_LOGOUT()
-    TankAddonVars = db
+    TankAddonClassicVars = db
 end
 
 function addon:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi)

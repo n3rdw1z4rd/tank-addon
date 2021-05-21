@@ -3,25 +3,10 @@ data = {}
 data.Font = "Fonts/FRIZQT__.TTF"
 
 data.ClassData = {
-    DEATHKNIGHT = {
-        spec = "Blood",
-        tauntSpellName = "Dark Command",
-        tauntSpellId = 56222
-    },
-    DEMONHUNTER = {
-        spec = "Vengeance",
-        tauntSpellName = "Torment",
-        tauntSpellId = 185245
-    },
     DRUID = {
         spec = "Guardian",
         tauntSpellName = "Growl",
         tauntSpellId = 6795
-    },
-    MONK = {
-        spec = "Brewmaster",
-        tauntSpellName = "Provoke",
-        tauntSpellId = 115546
     },
     PALADIN = {
         spec = "Protection",
