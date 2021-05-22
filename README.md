@@ -11,6 +11,15 @@ And a very special thanks to my fellow guildies of <UNDAUNTED> on Fenris who hel
 Devoile, Verro, Fezzie, Omgdots, Kayou, and others
 
 ## Installation
-* Download via the Releases link, https://www.wowinterface.com/downloads/info25763-TankAddon.html or the ZIP
-* Copy/move the `TankAddon` folder into your `World of Warcraft\_retail_\Interface\AddOns` folder.
+* Addon Manager:
+  * [CurseForge](https://curseforge.overwolf.com/?addonId=356845&fileId=3308056)
+  * [Minion](https://minion.mmoui.com/)
+* Manually:
+  * Download:
+    * [Releases](https://github.com/JohnCWakley/tank-addon/releases)
+    * [CurseForge](https://www.curseforge.com/wow/addons/tankaddon)
+    * [WoW Interface](https://www.wowinterface.com/downloads/info25763-TankAddon.html)
+  * Installation:
+    * Unzip archive.
+    * Copy/move the `TankAddon` folder into your `World of Warcraft\_retail_\Interface\AddOns` folder.
 * (Re)Start World of Warcraft.
