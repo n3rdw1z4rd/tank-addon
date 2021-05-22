@@ -7,4 +7,5 @@
 
 data.lua
 sbd.lua
+shim.lua
 addon.lua

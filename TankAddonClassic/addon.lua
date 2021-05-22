@@ -135,15 +135,15 @@ end
 
 -- registered events:
 addon:RegisterEvent("ADDON_LOADED")
-addon:RegisterEvent("PLAYER_LOGOUT")
-addon:RegisterEvent("PLAYER_ENTERING_WORLD")
-addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-addon:RegisterEvent("GROUP_ROSTER_UPDATE")
-addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
-addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
-addon:RegisterEvent("PLAYER_REGEN_ENABLED")
-addon:RegisterEvent("PLAYER_REGEN_DISABLED")
+-- addon:RegisterEvent("PLAYER_LOGOUT")
+-- addon:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- addon:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+-- addon:RegisterEvent("GROUP_ROSTER_UPDATE")
+-- addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+-- addon:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+-- addon:RegisterEvent("PLAYER_LEAVE_COMBAT")
+-- addon:RegisterEvent("PLAYER_REGEN_ENABLED")
+-- addon:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 addon:SetScript("OnEvent", function(self, event, ...)
     if self[event] then
@@ -265,7 +265,7 @@ function addon:CreateFrames()
 
         button.badge = button:CreateTexture(nil, "PARENT")
         button.badge:SetSize(20, 20)
-        button.badge:SetTexture(2202478)
+        button.badge:SetTexture("Interface/LFGFRAME/UI-LFG-ICON-PORTRAITROLES") -- 2202478
         button.badge:SetPoint("TOPLEFT", -5, 5)
 
         button:Hide()
@@ -276,13 +276,13 @@ function addon:CreateFrames()
 
         function button:SetRole(role)
             if role == "TANK" then
-                button.badge:SetTexCoord(.523, .757, 0, 1)
+                button.badge:SetTexCoord(0/64, 18/64, 21/64, 40/64)
             elseif role == "HEALER" then
-                button.badge:SetTexCoord(.265, .492, 0, 1)
+                button.badge:SetTexCoord(20/64, 38/64, 0/64, 19/64)
             elseif role == "DAMAGER" then
-                button.badge:SetTexCoord(.007, .242, 0, 1)
+                button.badge:SetTexCoord(20/64, 38/64, 21/64, 40/64)
             else
-                button.badge:SetTexCoord(.76, 1, 0, 1)
+                button.badge:SetTexCoord(0/64, 18/64, 0/64, 19/64)
             end
         end
 

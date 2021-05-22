@@ -1,4 +1,4 @@
-local debug = false
+local debug = true
 
 sbd = {}
 db = {}
