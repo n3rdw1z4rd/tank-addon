@@ -10,8 +10,8 @@ data.ClassData = {
     },
     PALADIN = {
         spec = "Protection",
-        tauntSpellName = "Hand of Reckoning",
-        tauntSpellId = 62124
+        tauntSpellName = "Righteous Defense",
+        tauntSpellId = 31789
     },
     WARRIOR = {
         spec = "Protection",

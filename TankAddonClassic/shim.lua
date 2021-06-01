@@ -1,7 +1,7 @@
 function UnitGroupRolesAssigned(unit)
     -- TANK, HEALER, DAMAGER, NONE
     
-    sbd:log_debug('UnitGroupRolesAssigned:', unit)
+    sbd:log_debug("UnitGroupRolesAssigned:", unit)
 
-    return 'TANK'
+    return "TANK"
 end
